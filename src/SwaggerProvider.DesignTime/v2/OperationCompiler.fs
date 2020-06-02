@@ -212,7 +212,7 @@ type OperationCompiler (schema:SwaggerObject, defCompiler:DefinitionCompiler, ig
             | false, None -> (task responseUnit).Raw
             )
         if not <| String.IsNullOrEmpty(op.Summary)
-            then m.AddXmlDoc(op.Summary) // TODO: Use description of parameters in docs
+            then m.AddXmlDocDelayed(fun () -> op.Summary) // TODO: Use description of parameters in docs
         if op.Deprecated
             then m.AddObsoleteAttribute("Operation is deprecated", false)
         m
@@ -252,7 +252,7 @@ type OperationCompiler (schema:SwaggerObject, defCompiler:DefinitionCompiler, ig
             let ty = ProvidedTypeDefinition(tyName, baseTy, isErased = false, isSealed = false, hideObjectMethods = true)
             ns.RegisterType(tyName, ty)
             if not <| String.IsNullOrEmpty clientName
-            then ty.AddXmlDoc (sprintf "Client for '%s_*' operations" clientName)
+            then ty.AddXmlDocDelayed (fun () -> sprintf "Client for '%s_*' operations" clientName)
 
             [
                 ProvidedConstructor(

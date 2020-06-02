@@ -1,4 +1,4 @@
-﻿namespace SwaggerProvider.Internal.v3.Compilers
+namespace SwaggerProvider.Internal.v3.Compilers
 
 open System
 open System.Net.Http
@@ -333,7 +333,7 @@ type OperationCompiler (schema:OpenApiDocument, defCompiler:DefinitionCompiler, 
                 | Some t -> Expr.Coerce(<@ RuntimeHelpers.taskCast t %(task responseObj) @>, overallReturnType)
             )
         if not <| String.IsNullOrEmpty(operation.Summary)
-            then m.AddXmlDoc(operation.Summary) // TODO: Use description of parameters in docs
+            then m.AddXmlDocDelayed(fun () -> operation.Summary) // TODO: Use description of parameters in docs
         if operation.Deprecated
             then m.AddObsoleteAttribute("Operation is deprecated", false)
         m
@@ -380,7 +380,7 @@ type OperationCompiler (schema:OpenApiDocument, defCompiler:DefinitionCompiler, 
             let ty = ProvidedTypeDefinition(tyName, baseTy, isErased = false, isSealed = false, hideObjectMethods = true)
             ns.RegisterType(tyName, ty)
             if not <| String.IsNullOrEmpty clientName
-            then ty.AddXmlDoc (sprintf "Client for '%s_*' operations" clientName)
+            then ty.AddXmlDocDelayed (fun () -> (sprintf "Client for '%s_*' operations" clientName))
 
             [
                 ProvidedConstructor(

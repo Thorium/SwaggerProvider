@@ -1,4 +1,4 @@
-﻿namespace SwaggerProvider.Internal.v3.Compilers
+namespace SwaggerProvider.Internal.v3.Compilers
 
 open System
 open System.Reflection
@@ -123,7 +123,7 @@ and NamespaceAbstraction (name:string) =
                     nsTy.AddMembers <| types
                     Some nsTy
             | NestedType(ty,ns) ->
-                ty.AddMembers <| ns.GetProvidedTypes()
+                ty.AddMembersDelayed <| fun () -> ns.GetProvidedTypes()
                 Some ty)
 
 /// Object for compiling definitions.
@@ -204,12 +204,12 @@ type DefinitionCompiler (schema:OpenApiDocument, provideNullable) as this =
 
                         let (pField, pProp) = generateProperty propName pTy
                         if not <| String.IsNullOrWhiteSpace propSchema.Description
-                            then pProp.AddXmlDoc propSchema.Description
+                            then pProp.AddXmlDocDelayed(fun () -> propSchema.Description)
                         pField, pProp
                     )
 
                 // Add fields and properties to type
-                ty.AddMembers <|
+                ty.AddMembersDelayed <| fun () ->
                     (members |> List.collect (fun (f,p) -> [f :> MemberInfo; p:> MemberInfo]))
 
                 // Add default constructor
@@ -279,7 +279,7 @@ type DefinitionCompiler (schema:OpenApiDocument, provideNullable) as this =
 
                 let objToStr = (typeof<obj>).GetMethod("ToString",[||])
                 ty.DefineMethodOverride(toStr, objToStr)
-                ty.AddMember <| toStr
+                ty.AddMemberDelayed <| fun() -> toStr
 
                 ty :> Type
         let tyType =

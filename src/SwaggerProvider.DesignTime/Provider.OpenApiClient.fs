@@ -84,7 +84,7 @@ type public OpenApiClientTypeProvider(cfg : TypeProviderConfig) as this =
                     let tempAsm = ProvidedAssembly()
                     let ty = ProvidedTypeDefinition(tempAsm, ns, typeName, Some typeof<obj>, isErased = false, hideObjectMethods = true)
                     ty.AddXmlDoc ("OpenAPI Provider for " + schemaPathRaw)
-                    ty.AddMembers tys
+                    ty.AddMembersDelayed(fun () -> tys)
                     tempAsm.AddTypes [ty]
 
                     ty
