@@ -1,3 +1,6 @@
+#### 0.12.2 - June 22, 2022
+- Newtonsoft updated
+
 #### 0.12.1 - Apr 9, 2022
 - Correctly serialize Guid [] as query parameter [#192](https://github.com/fsprojects/SwaggerProvider/pull/192)
 
